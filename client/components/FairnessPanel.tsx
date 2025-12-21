@@ -1,0 +1,149 @@
+import { Copy, Zap } from "lucide-react";
+import { useState, useEffect } from "react";
+
+interface LogEntry {
+  id: string;
+  timestamp: string;
+  message: string;
+  type: "proof" | "event" | "warn";
+}
+
+export default function FairnessPanel() {
+  const [seed, setSeed] = useState("0x7a3f9b2d...");
+  const [difficulty, setDifficulty] = useState(65);
+  const [logs, setLogs] = useState<LogEntry[]>([
+    {
+      id: "1",
+      timestamp: "14:23:45",
+      message: "VRF Seed initialized",
+      type: "event",
+    },
+    {
+      id: "2",
+      timestamp: "14:23:46",
+      message: "Proof of Slice #1 verified",
+      type: "proof",
+    },
+    {
+      id: "3",
+      timestamp: "14:23:47",
+      message: "Multiplier: 1.25x",
+      type: "event",
+    },
+    {
+      id: "4",
+      timestamp: "14:23:48",
+      message: "Proof of Slice #2 verified",
+      type: "proof",
+    },
+  ]);
+
+  useEffect(() => {
+    // Simulate incoming logs
+    const interval = setInterval(() => {
+      const messages = [
+        "Proof of Slice verified",
+        "Combo detected!",
+        "Multiplier increased",
+        "Block hash confirmed",
+      ];
+      const newLog: LogEntry = {
+        id: Date.now().toString(),
+        timestamp: new Date().toLocaleTimeString(),
+        message: messages[Math.floor(Math.random() * messages.length)],
+        type: Math.random() > 0.5 ? "proof" : "event",
+      };
+      setLogs((prev) => [newLog, ...prev.slice(0, 9)]);
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(seed);
+  };
+
+  return (
+    <div className="w-full md:w-80 bg-card border border-border rounded-lg p-4 flex flex-col gap-4">
+      {/* Header */}
+      <h2 className="text-lg font-bold text-foreground">Fairness</h2>
+
+      {/* Current Seed */}
+      <div className="space-y-2">
+        <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+          Current Seed
+        </label>
+        <div className="flex items-center gap-2 bg-input rounded p-2">
+          <code className="text-xs font-mono text-accent flex-1 break-all">
+            {seed}
+          </code>
+          <button
+            onClick={copyToClipboard}
+            className="p-1.5 hover:bg-border rounded transition-colors flex-shrink-0"
+            title="Copy seed"
+          >
+            <Copy className="w-3 h-3 text-muted-foreground" />
+          </button>
+        </div>
+      </div>
+
+      {/* Difficulty Level */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+            Difficulty
+          </label>
+          <span className="text-sm font-bold text-secondary">{difficulty}%</span>
+        </div>
+        <div className="w-full h-2 bg-input rounded-full overflow-hidden">
+          <div
+            className="h-full bg-gradient-to-r from-secondary to-accent transition-all duration-300"
+            style={{ width: `${difficulty}%` }}
+          />
+        </div>
+        <p className="text-xs text-muted-foreground">
+          Multiplier: {(1 + difficulty / 100).toFixed(2)}x
+        </p>
+      </div>
+
+      {/* Divider */}
+      <div className="h-px bg-border" />
+
+      {/* Live Game Log */}
+      <div className="space-y-2 flex-1 flex flex-col">
+        <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+          Live Game Log
+        </label>
+        <div className="flex-1 bg-input rounded border border-border overflow-hidden flex flex-col">
+          <div className="flex-1 overflow-y-auto space-y-1 p-3 font-mono text-xs">
+            {logs.length === 0 ? (
+              <div className="text-muted-foreground">Waiting for events...</div>
+            ) : (
+              logs.map((log) => (
+                <div key={log.id} className="flex gap-2 text-muted-foreground">
+                  <span className="text-muted-foreground opacity-60 flex-shrink-0">
+                    {log.timestamp}
+                  </span>
+                  <span className="flex-1">
+                    {log.type === "proof" ? (
+                      <span className="text-accent">[PROOF]</span>
+                    ) : (
+                      <span className="text-secondary">[EVENT]</span>
+                    )}{" "}
+                    {log.message}
+                  </span>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+        <Zap className="w-3 h-3 text-accent" />
+        <span>On-chain verified</span>
+      </div>
+    </div>
+  );
+}

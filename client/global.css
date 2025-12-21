@@ -1,0 +1,119 @@
+/** @import must precede all other statements */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /**
+   * Tailwind CSS theme
+   * Neo-Arcade theme with dark background and vibrant purple/magenta accents
+   * tailwind.config.ts expects the following color variables to be expressed as HSL values.
+   * A different format will require also updating the theme in tailwind.config.ts.
+  */
+  :root {
+    /* Neo-Arcade Dark Mode Colors */
+    --background: 240 10% 8%;
+    --foreground: 0 0% 95%;
+
+    --card: 240 8% 12%;
+    --card-foreground: 0 0% 95%;
+
+    --popover: 240 8% 12%;
+    --popover-foreground: 0 0% 95%;
+
+    /* Monad Purple - Primary */
+    --primary: 270 100% 50%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Neon Magenta - Secondary */
+    --secondary: 320 100% 50%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 240 5% 25%;
+    --muted-foreground: 0 0% 70%;
+
+    /* Neon Cyan accent */
+    --accent: 180 100% 50%;
+    --accent-foreground: 240 10% 8%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 240 5% 20%;
+    --input: 240 8% 16%;
+    --ring: 270 100% 50%;
+
+    --radius: 0.375rem;
+
+    --sidebar-background: 240 8% 12%;
+    --sidebar-foreground: 0 0% 95%;
+    --sidebar-primary: 270 100% 50%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 320 100% 50%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 240 5% 20%;
+    --sidebar-ring: 270 100% 50%;
+  }
+
+  .dark {
+    --background: 240 10% 8%;
+    --foreground: 0 0% 95%;
+
+    --card: 240 8% 12%;
+    --card-foreground: 0 0% 95%;
+
+    --popover: 240 8% 12%;
+    --popover-foreground: 0 0% 95%;
+
+    --primary: 270 100% 50%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 320 100% 50%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 240 5% 25%;
+    --muted-foreground: 0 0% 70%;
+
+    --accent: 180 100% 50%;
+    --accent-foreground: 240 10% 8%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 240 5% 20%;
+    --input: 240 8% 16%;
+    --ring: 270 100% 50%;
+
+    --sidebar-background: 240 8% 12%;
+    --sidebar-foreground: 0 0% 95%;
+    --sidebar-primary: 270 100% 50%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 320 100% 50%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 240 5% 20%;
+    --sidebar-ring: 270 100% 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  :where(p, span, li, h1, h2, h3, h4, h5, h6, a, button, label, td, th) {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  pre,
+  code {
+    overflow-x: auto;
+    white-space: pre;
+  }
+}

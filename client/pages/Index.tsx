@@ -1,0 +1,64 @@
+import { useState } from "react";
+import Header from "@/components/Header";
+import GameArena from "@/components/GameArena";
+import FairnessPanel from "@/components/FairnessPanel";
+import Leaderboard from "@/components/Leaderboard";
+import PostGameModal from "@/components/PostGameModal";
+
+export default function Index() {
+  const [showPostGameModal, setShowPostGameModal] = useState(false);
+
+  const mockGameResult = {
+    score: 18100,
+    multiplier: 1.8,
+    txHash: "0x1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p",
+  };
+
+  return (
+    <div className="min-h-screen bg-background text-foreground">
+      {/* Header */}
+      <Header />
+
+      {/* Main Content */}
+      <main className="px-4 md:px-6 py-6 max-w-7xl mx-auto">
+        {/* Game Section */}
+        <div className="space-y-4 mb-8">
+          {/* Arena + Fairness Panel */}
+          <div className="flex flex-col md:flex-row gap-4">
+            {/* Game Arena */}
+            <div className="flex-1 min-w-0">
+              <GameArena />
+            </div>
+
+            {/* Fairness Sidebar */}
+            <div className="w-full md:w-80 flex-shrink-0">
+              <FairnessPanel />
+            </div>
+          </div>
+        </div>
+
+        {/* Leaderboard */}
+        <Leaderboard />
+
+        {/* Demo Button for Post-Game Modal */}
+        <div className="mt-8 flex justify-center">
+          <button
+            onClick={() => setShowPostGameModal(true)}
+            className="px-6 py-3 bg-primary hover:opacity-90 transition-opacity text-primary-foreground font-bold rounded-lg text-sm"
+          >
+            Demo: Show Post-Game Modal
+          </button>
+        </div>
+      </main>
+
+      {/* Post-Game Modal */}
+      <PostGameModal
+        isOpen={showPostGameModal}
+        onClose={() => setShowPostGameModal(false)}
+        score={mockGameResult.score}
+        multiplier={mockGameResult.multiplier}
+        txHash={mockGameResult.txHash}
+      />
+    </div>
+  );
+}
