@@ -9,6 +9,10 @@ export function startGame() {
   }
 }
 
+export function getGameInstance(): Phaser.Game | null {
+  return game;
+}
+
 export function destroyGame() {
   if (game) {
     game.destroy(true);

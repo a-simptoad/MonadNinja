@@ -1,8 +1,31 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PhaserGame from "@/components/PhaserGame";
+import PostGameModal from "@/components/PostGameModal";
+import { getGameInstance } from "@/game/Game";
 
 export default function GameArena() {
   const [gameStarted, setGameStarted] = useState(false);
+  const [showPostGameModal, setShowPostGameModal] = useState(false);
+  const [score, setScore] = useState(0);
+  const [multiplier, setMultiplier] = useState(1);
+  const [txHash, setTxHash] = useState("");
+
+  useEffect(() => {
+    const game = getGameInstance();
+    if (gameStarted && game) {
+      // You can add any additional logic here if needed when the game starts
+      game.events.on('gameover', (score: number) => {
+        setScore(score);
+        setShowPostGameModal(true);
+      });
+    }
+
+    return () => {
+      if (game) {
+        game.events.off('gameover');
+      }
+    };
+  }, [gameStarted]); 
 
   return (
     <div className="w-full flex flex-col gap-4">
@@ -32,6 +55,14 @@ export default function GameArena() {
           ) : (
             <div className="text-center text-muted-foreground">
               <PhaserGame />
+
+              <PostGameModal
+                      isOpen={showPostGameModal}
+                      onClose={() => setShowPostGameModal(false)}
+                      score={score}
+                      multiplier={multiplier}
+                      txHash={txHash}
+                />
             </div>
           )}
         </div>

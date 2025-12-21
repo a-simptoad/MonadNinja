@@ -4,8 +4,12 @@ export default class MainScene extends Phaser.Scene {
     slash: Phaser.GameObjects.Graphics;
     points: { x: number; y: number }[] = [];
     fruits: Phaser.Physics.Arcade.Group;
+    bombs: Phaser.Physics.Arcade.Group; // New group for bombs
     halves: Phaser.Physics.Arcade.Group;
     emitter: Phaser.GameObjects.Particles.ParticleEmitter;
+
+    score: number = 0;
+    scoreText: Phaser.GameObjects.Text;
 
     constructor() {
         super("MainScene");
@@ -15,6 +19,7 @@ export default class MainScene extends Phaser.Scene {
         this.load.image("background", 'assets/background.png'); // Change the background image
         this.load.image("bomb", 'assets/bomb.png');
 
+        // Fruits
         this.load.image("apple", 'assets/apple.png');
         this.load.image("apple_1", 'assets/apple_half_1.png');
         this.load.image("apple_2", 'assets/apple_half_2.png');
@@ -41,9 +46,18 @@ export default class MainScene extends Phaser.Scene {
         this.add.image(400, 300, 'background');
         
         this.fruits = this.physics.add.group();
+        this.bombs = this.physics.add.group();
         this.halves = this.physics.add.group();
 
-        const particles = this.add.particles(0, 0, 'particle', {
+        this.scoreText = this.add.text(20, 20, 'SCORE: 0', {
+            fontSize: '32px',
+            color: '#ffffff',
+            fontStyle: 'bold',
+            stroke: '#000000',
+            strokeThickness: 4
+        });
+
+        this.emitter = this.add.particles(0, 0, 'particle', {
             speed: { min: -200, max: 200 },
             angle: { min: 0, max: 360 },
             scale: { start: 0.1, end: 0 },
@@ -51,10 +65,9 @@ export default class MainScene extends Phaser.Scene {
             gravityY: 400,
             emitting: false
         });
-        this.emitter = particles;
 
         this.slash = this.add.graphics();
-        this.spawnFruit();
+        this.spawnObject();
     }
 
     update() {
@@ -65,7 +78,6 @@ export default class MainScene extends Phaser.Scene {
             if (this.points.length > 10) this.points.shift();
 
             this.slash.clear();
-            
             for (let i = 0; i < this.points.length - 1; i++) {
                 const size = i * 1.5;
                 this.slash.lineStyle(size, 0xffffff, 1); 
@@ -82,30 +94,47 @@ export default class MainScene extends Phaser.Scene {
         this.checkBounds();
     }
 
-    spawnFruit() {
-        const fruitTypes = ['apple', 'banana', 'coco', 'orange', 'melon', 'pineapple'];
+    spawnObject() {
+        const bombChance = 0.4; 
+        const isBomb = Math.random() < bombChance;
+
         const x = Phaser.Math.Between(100, 700);
-        const fruitType = Phaser.Utils.Array.GetRandom(fruitTypes);
-        
-        const fruit = this.fruits.create(x, 650, fruitType);
-        fruit.setScale(0.15).setInteractive();
-        
-        fruit.setVelocity(Phaser.Math.Between(-100, 100), -Phaser.Math.Between(600, 800));
-        fruit.setAngularVelocity(Phaser.Math.Between(-200, 200));
 
-        fruit.on('pointerover', () => {
-            if (this.input.activePointer.isDown) {
-                this.sliceFruit(fruit, fruitType);
-            }
-        });
+        if (isBomb) {
+            const bomb = this.bombs.create(x, 650, 'bomb');
+            bomb.setScale(0.2).setInteractive(this.input.makePixelPerfect());
+            bomb.setVelocity(Phaser.Math.Between(-50, 50), -Phaser.Math.Between(600, 800));
+            bomb.setAngularVelocity(Phaser.Math.Between(-200, 200));
 
-        this.time.delayedCall(1200, this.spawnFruit, [], this);
+            bomb.on('pointerover', () => {
+                if (this.input.activePointer.isDown) {
+                    this.handleBombHit();
+                }
+            });
+        } else {
+            const fruitTypes = ['apple', 'banana', 'coco', 'orange', 'melon', 'pineapple'];
+            const fruitType = Phaser.Utils.Array.GetRandom(fruitTypes);
+            const fruit = this.fruits.create(x, 650, fruitType);
+            fruit.setScale(0.15).setInteractive(this.input.makePixelPerfect());
+            fruit.setVelocity(Phaser.Math.Between(-100, 100), -Phaser.Math.Between(600, 800));
+            fruit.setAngularVelocity(Phaser.Math.Between(-200, 200));
+
+            fruit.on('pointerover', () => {
+                if (this.input.activePointer.isDown) {
+                    this.sliceFruit(fruit, fruitType);
+                }
+            });
+        }
+
+        this.time.delayedCall(1000, this.spawnObject, [], this);
     }
 
     sliceFruit(fruit: Phaser.Physics.Arcade.Sprite, type: string) {
+        this.score += 10;
+        this.scoreText.setText(`SCORE: ${this.score}`);
+
         const x = fruit.x;
         const y = fruit.y;
-
         this.emitter.explode(15, x, y); 
 
         const leftHalf = this.halves.create(x - 10, y, `${type}_1`).setScale(0.15);
@@ -117,17 +146,18 @@ export default class MainScene extends Phaser.Scene {
         fruit.destroy();
     }
 
-    checkBounds() {
-        this.fruits.getChildren().forEach((fruit: any) => {
-            if (fruit.y > 700) {
-                fruit.destroy();
-            }
-        });
+    handleBombHit() {
+        this.cameras.main.shake(500, 0.03);
+        this.physics.pause();
+        
+        this.game.events.emit('gameover', this.score);
+    }
 
-        this.halves.getChildren().forEach((half: any) => {
-            if (half.y > 700) {
-                half.destroy();
-            }
+    checkBounds() {
+        [this.fruits, this.bombs, this.halves].forEach(group => {
+            group.getChildren().forEach((obj: any) => {
+                if (obj.y > 700) obj.destroy();
+            });
         });
     }
 }
