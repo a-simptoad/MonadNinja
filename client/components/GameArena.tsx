@@ -1,4 +1,5 @@
 import { useState } from "react";
+import PhaserGame from "@/components/PhaserGame";
 
 export default function GameArena() {
   const [gameStarted, setGameStarted] = useState(false);
@@ -30,8 +31,7 @@ export default function GameArena() {
             </div>
           ) : (
             <div className="text-center text-muted-foreground">
-              <p className="text-lg">Phaser.js Canvas will mount here</p>
-              <p className="text-xs mt-2">Game ID: #12345</p>
+              <PhaserGame />
             </div>
           )}
         </div>
