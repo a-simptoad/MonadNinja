@@ -14,8 +14,8 @@ export default function GameArena() {
     const game = getGameInstance();
     if (gameStarted && game) {
       // You can add any additional logic here if needed when the game starts
-      game.events.on('gameover', (score: number) => {
-        setScore(score);
+      game.events.on('gameover', (data: {score: number, seed: string}) => {
+        setScore(data.score);
         setShowPostGameModal(true);
       });
     }
@@ -58,7 +58,10 @@ export default function GameArena() {
 
               <PostGameModal
                       isOpen={showPostGameModal}
-                      onClose={() => setShowPostGameModal(false)}
+                      onClose={() => {
+                        setGameStarted(false);
+                        setShowPostGameModal(false)
+                      }}
                       score={score}
                       multiplier={multiplier}
                       txHash={txHash}

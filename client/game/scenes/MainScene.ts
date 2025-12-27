@@ -11,8 +11,18 @@ export default class MainScene extends Phaser.Scene {
     score: number = 0;
     scoreText: Phaser.GameObjects.Text;
 
+    rng: Phaser.Math.RandomDataGenerator;
+    seed: string = "0x0";
+
     constructor() {
         super("MainScene");
+    }
+
+    init(data: { seed: string }) {
+        if (data.seed) {
+            this.seed = data.seed;
+        }
+        this.rng = new Phaser.Math.RandomDataGenerator([this.seed]);
     }
 
     preload() {
@@ -96,15 +106,15 @@ export default class MainScene extends Phaser.Scene {
 
     spawnObject() {
         const bombChance = 0.4; 
-        const isBomb = Math.random() < bombChance;
+        const isBomb = this.rng.frac() < bombChance;
 
-        const x = Phaser.Math.Between(100, 700);
+        const x = this.rng.between(100, 700);
 
         if (isBomb) {
             const bomb = this.bombs.create(x, 650, 'bomb');
             bomb.setScale(0.2).setInteractive(this.input.makePixelPerfect());
-            bomb.setVelocity(Phaser.Math.Between(-50, 50), -Phaser.Math.Between(600, 800));
-            bomb.setAngularVelocity(Phaser.Math.Between(-200, 200));
+            bomb.setVelocity(this.rng.between(-50, 50), -this.rng.between(600, 800));
+            bomb.setAngularVelocity(this.rng.between(-200, 200));
 
             bomb.on('pointerover', () => {
                 if (this.input.activePointer.isDown) {
@@ -113,11 +123,11 @@ export default class MainScene extends Phaser.Scene {
             });
         } else {
             const fruitTypes = ['apple', 'banana', 'coco', 'orange', 'melon', 'pineapple'];
-            const fruitType = Phaser.Utils.Array.GetRandom(fruitTypes);
+            const fruitType = this.rng.pick(fruitTypes);
             const fruit = this.fruits.create(x, 650, fruitType);
             fruit.setScale(0.15).setInteractive(this.input.makePixelPerfect());
-            fruit.setVelocity(Phaser.Math.Between(-100, 100), -Phaser.Math.Between(600, 800));
-            fruit.setAngularVelocity(Phaser.Math.Between(-200, 200));
+            fruit.setVelocity(this.rng.between(-100, 100), -this.rng.between(600, 800));
+            fruit.setAngularVelocity(this.rng.between(-200, 200));
 
             fruit.on('pointerover', () => {
                 if (this.input.activePointer.isDown) {
@@ -150,7 +160,7 @@ export default class MainScene extends Phaser.Scene {
         this.cameras.main.shake(500, 0.03);
         this.physics.pause();
         
-        this.game.events.emit('gameover', this.score);
+        this.game.events.emit('gameover', {score: this.score, seed: this.seed});
     }
 
     checkBounds() {

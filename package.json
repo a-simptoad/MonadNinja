@@ -21,6 +21,7 @@
     "typecheck": "tsc"
   },
   "dependencies": {
+    "@pythnetwork/entropy-sdk-solidity": "^2.1.0",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
     "phaser": "^3.90.0",
