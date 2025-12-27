@@ -1,20 +1,7 @@
-import { Wallet } from "lucide-react";
-import { useState } from "react";
+import '@rainbow-me/rainbowkit/styles.css';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 export default function Header() {
-  const [isWalletConnected, setIsWalletConnected] = useState(false);
-  const [walletAddress, setWalletAddress] = useState("");
-
-  const handleConnectWallet = async () => {
-    // Placeholder for wallet connection logic (Wagmi/RainbowKit)
-    if (!isWalletConnected) {
-      setIsWalletConnected(true);
-      setWalletAddress("0x1234...5678");
-    } else {
-      setIsWalletConnected(false);
-      setWalletAddress("");
-    }
-  };
 
   return (
     <header className="border-b border-border bg-card backdrop-blur-sm">
@@ -40,14 +27,7 @@ export default function Header() {
           </span>
         </div>
 
-        {/* Wallet Button */}
-        <button
-          onClick={handleConnectWallet}
-          className="flex items-center gap-2 px-4 py-2 rounded-md bg-gradient-to-r from-primary to-secondary hover:opacity-90 transition-opacity font-semibold text-primary-foreground text-sm"
-        >
-          <Wallet className="w-4 h-4" />
-          {isWalletConnected ? walletAddress : "Connect Wallet"}
-        </button>
+        <ConnectButton showBalance={false} />
       </div>
     </header>
   );
