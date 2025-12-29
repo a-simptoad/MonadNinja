@@ -3,8 +3,6 @@ import MainScene from "./scenes/MainScene";
 
 export const gameConfig: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
-  width: 800,
-  height: 600,
   backgroundColor: "#000000",
   parent: "phaser-game", // 👈 DOM container ID
   scene: [MainScene],
@@ -15,4 +13,8 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
       debug: true,
     },
   },
+  scale:{
+    mode: Phaser.Scale.RESIZE,
+    autoCenter: Phaser.Scale.CENTER_BOTH,
+  }
 };

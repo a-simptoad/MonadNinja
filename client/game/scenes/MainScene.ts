@@ -4,8 +4,9 @@ export default class MainScene extends Phaser.Scene {
     slash: Phaser.GameObjects.Graphics;
     points: { x: number; y: number }[] = [];
     fruits: Phaser.Physics.Arcade.Group;
-    bombs: Phaser.Physics.Arcade.Group; // New group for bombs
+    bombs: Phaser.Physics.Arcade.Group; 
     halves: Phaser.Physics.Arcade.Group;
+    lives: Phaser.GameObjects.Group;
     emitter: Phaser.GameObjects.Particles.ParticleEmitter;
 
     score: number = 0;
@@ -14,12 +15,14 @@ export default class MainScene extends Phaser.Scene {
     rng: Phaser.Math.RandomDataGenerator;
     seed: string = "0x0";
 
+    health: number = 3;
+
     constructor() {
         super("MainScene");
     }
     
     preload() {
-        this.load.image("background", 'assets/background.png'); // Change the background image
+        this.load.image("background", 'assets/background.png');
         this.load.image("bomb", 'assets/bomb.png');
 
         // Fruits
@@ -42,7 +45,8 @@ export default class MainScene extends Phaser.Scene {
         this.load.image("pineapple_1", 'assets/pineapple_half_1.png');
         this.load.image("pineapple_2", 'assets/pineapple_half_2.png');
         
-        this.load.image("particle", "assets/apple_half_1.png");  // Need to get a particle image
+        this.load.image("particle", "assets/star.png");  // Need to get a particle image
+        this.load.image("heart", "assets/heart.png");
 
         this.seed = this.game.registry.get('randomSeed');
         this.rng = new Phaser.Math.RandomDataGenerator([this.seed]);
@@ -54,6 +58,12 @@ export default class MainScene extends Phaser.Scene {
         this.fruits = this.physics.add.group();
         this.bombs = this.physics.add.group();
         this.halves = this.physics.add.group();
+        this.lives = this.add.group();
+
+        for (let i = 0; i < this.health; i++) {
+            const heart = this.add.image(750 - i * 40, 50, 'heart').setScale(0.05);
+            this.lives.add(heart);
+        }
 
         this.scoreText = this.add.text(20, 20, 'SCORE: 0', {
             fontSize: '32px',
@@ -66,7 +76,7 @@ export default class MainScene extends Phaser.Scene {
         this.emitter = this.add.particles(0, 0, 'particle', {
             speed: { min: -200, max: 200 },
             angle: { min: 0, max: 360 },
-            scale: { start: 0.1, end: 0 },
+            scale: { start: 0.01, end: 0 },
             lifespan: 400,
             gravityY: 400,
             emitting: false
@@ -160,7 +170,18 @@ export default class MainScene extends Phaser.Scene {
     }
 
     checkBounds() {
-        [this.fruits, this.bombs, this.halves].forEach(group => {
+        this.fruits.getChildren().forEach((fruit: any) => {
+            if (fruit.y > 700) {
+                this.health -= 1;
+                fruit.destroy();
+                this.lives.getChildren()[this.health].destroy();
+                if(this.health == 0) {
+                    this.handleBombHit();
+                }
+            }
+        });
+
+        [this.bombs, this.halves].forEach(group => {
             group.getChildren().forEach((obj: any) => {
                 if (obj.y > 700) obj.destroy();
             });
