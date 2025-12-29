@@ -3,9 +3,10 @@ import { gameConfig } from "./config";
 
 let game: Phaser.Game | null = null;
 
-export function startGame() {
+export function startGame(seed) {
   if (!game) {
     game = new Phaser.Game(gameConfig);
+    game.registry.set('randomSeed', seed);
   }
 }
 

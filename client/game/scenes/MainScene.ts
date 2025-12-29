@@ -17,14 +17,7 @@ export default class MainScene extends Phaser.Scene {
     constructor() {
         super("MainScene");
     }
-
-    init(data: { seed: string }) {
-        if (data.seed) {
-            this.seed = data.seed;
-        }
-        this.rng = new Phaser.Math.RandomDataGenerator([this.seed]);
-    }
-
+    
     preload() {
         this.load.image("background", 'assets/background.png'); // Change the background image
         this.load.image("bomb", 'assets/bomb.png');
@@ -50,6 +43,9 @@ export default class MainScene extends Phaser.Scene {
         this.load.image("pineapple_2", 'assets/pineapple_half_2.png');
         
         this.load.image("particle", "assets/apple_half_1.png");  // Need to get a particle image
+
+        this.seed = this.game.registry.get('randomSeed');
+        this.rng = new Phaser.Math.RandomDataGenerator([this.seed]);
     }
 
     create() {

@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 import { startGame, destroyGame } from "@/game/Game";
 
-export default function PhaserGame() {
+export default function PhaserGame( seed ) {
   useEffect(() => {
-    startGame();
+    startGame(seed);
 
     return () => {
       destroyGame();
