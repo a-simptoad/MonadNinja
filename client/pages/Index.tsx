@@ -7,6 +7,8 @@ import PostGameModal from "@/components/PostGameModal";
 
 export default function Index() {
   const [showPostGameModal, setShowPostGameModal] = useState(false);
+  const [seed, setSeed] = useState("Start a game to generate a seed");
+  const [txHash, setTxHash] = useState<`0x${string}` | undefined>(undefined);
 
   const mockGameResult = {
     score: 18100,
@@ -27,12 +29,12 @@ export default function Index() {
           <div className="flex flex-col md:flex-row gap-4">
             {/* Game Arena */}
             <div className="flex-1 min-w-0">
-              <GameArena />
+              <GameArena txHash={txHash} setSeed={setSeed} setTxHash={setTxHash}/>
             </div>
 
             {/* Fairness Sidebar */}
             <div className="w-full md:w-80 flex-shrink-0">
-              <FairnessPanel />
+              <FairnessPanel txHash={txHash} seed={seed} />
             </div>
           </div>
         </div>

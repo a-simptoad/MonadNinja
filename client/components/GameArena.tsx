@@ -13,14 +13,13 @@ import { parseEventLogs } from "viem";
 import { abi } from "@/config/abi";
 import { monadTestnet } from "@/config/wagmi";
 
-export default function GameArena() {
+export default function GameArena({ txHash, setSeed, setTxHash }: { txHash: `0x${string}` | undefined; setSeed: (seed: string) => void; setTxHash: (hash: `0x${string}` | undefined) => void }) {
   const [gameStarted, setGameStarted] = useState(false);
   const [showPostGameModal, setShowPostGameModal] = useState(false);
   const [score, setScore] = useState(0);
   const [multiplier, setMultiplier] = useState(1);
   const [randomNumber, setRandomNumber] = useState<string>(""); 
   
-  const [txHash, setTxHash] = useState<`0x${string}` | undefined>(undefined);
   const [sequenceNumber, setSequenceNumber] = useState<bigint | null>(null);
 
   const { address } = useAccount();
@@ -83,8 +82,10 @@ export default function GameArena() {
             const match = logs.find(log => log.args.sequenceNumber === sequenceNumber);
             
             if (match) {
-                console.log("✅ ORACLE FOUND!", match.args.randomNumber.toString());
-                setRandomNumber(match.args.randomNumber.toString());
+              const seed = match.args.randomNumber.toString();
+                console.log("✅ ORACLE FOUND!", seed);
+                setRandomNumber(seed);
+                setSeed(seed);
                 setGameStarted(true);
                 clearInterval(pollInterval);
             }
@@ -143,7 +144,7 @@ export default function GameArena() {
       functionName: 'requestRandomNumber',
       account: address,
       chain: monadTestnet, 
-      value: 150000000000000000n, 
+      value: 200000000000000000n, 
     });
   }
 

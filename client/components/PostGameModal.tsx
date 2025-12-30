@@ -88,7 +88,7 @@ export default function PostGameModal({
               <p className="text-xs text-muted-foreground uppercase font-semibold mb-2">
                 Verified TX
               </p>
-              <code className="text-xs font-mono text-accent break-all">
+              <code className="text-xs font-mono text-accent break-all text-wrap">
                 {txHash}
               </code>
             </div>

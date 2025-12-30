@@ -1,4 +1,5 @@
 import { Copy, Zap } from "lucide-react";
+import { useWaitForTransactionReceipt } from "wagmi";
 import { useState, useEffect } from "react";
 
 interface LogEntry {
@@ -8,9 +9,7 @@ interface LogEntry {
   type: "proof" | "event" | "warn";
 }
 
-export default function FairnessPanel() {
-  const [seed, setSeed] = useState("0x7a3f9b2d...");
-  const [difficulty, setDifficulty] = useState(65);
+export default function FairnessPanel({ txHash, seed }: { txHash: `0x${string}` | undefined; seed: string }) {
   const [logs, setLogs] = useState<LogEntry[]>([
     {
       id: "1",
@@ -38,26 +37,74 @@ export default function FairnessPanel() {
     },
   ]);
 
-  useEffect(() => {
-    // Simulate incoming logs
-    const interval = setInterval(() => {
-      const messages = [
-        "Proof of Slice verified",
-        "Combo detected!",
-        "Multiplier increased",
-        "Block hash confirmed",
-      ];
-      const newLog: LogEntry = {
-        id: Date.now().toString(),
-        timestamp: new Date().toLocaleTimeString(),
-        message: messages[Math.floor(Math.random() * messages.length)],
-        type: Math.random() > 0.5 ? "proof" : "event",
+  const messages = {
+        "Transaction Confirmed": "event", // Hash generated
+        "VRF request Submitted": "event", // Received transaction receipt //(comes from txHash)
+        "Oracle assigned Sequence": "proof", // Sequence number generated // (comes from receipt logs)
+        "Seed Updated": "event", // Seed Updated
+        "Game Started": "event", // Game Started
+        "Game Ended": "event" // Game Ended
       };
-      setLogs((prev) => [newLog, ...prev.slice(0, 9)]);
-    }, 4000);
 
-    return () => clearInterval(interval);
-  }, []);
+  const { data: receipt, isSuccess: isConfirmed } = useWaitForTransactionReceipt({ hash: txHash });
+
+  useEffect(() => {
+      // Add log for Transaction Confirmed
+      if(txHash) {
+        const newLog: LogEntry = {
+          id: (logs.length + 1).toString(),
+          timestamp: new Date().toLocaleTimeString(),
+          message: "Transaction Confirmed",
+          type: messages["Transaction Confirmed"] as "proof" | "event" | "warn",
+        };
+        setLogs((prevLogs) => [...prevLogs, newLog]);
+      }
+        console.log(messages["Transaction Confirmed"] + " Transaction Confirmed");
+  }, [txHash]);
+
+  useEffect(() => {
+      // Add log for VRF request Submitted
+      if(isConfirmed) {
+        const newLog: LogEntry = {
+          id: (logs.length + 1).toString(),
+          timestamp: new Date().toLocaleTimeString(),
+          message: "VRF request Submitted",
+          type: messages["VRF request Submitted"] as "proof" | "event" | "warn",
+        };
+        setLogs((prevLogs) => [...prevLogs, newLog]);
+      }
+        console.log(messages["VRF request Submitted"] + " VRF request Submitted");
+  }, [isConfirmed]);
+
+  useEffect(() => {
+      // Add log for Seed Updated
+      if(receipt) {
+        const newLog: LogEntry = {
+          id: (logs.length + 1).toString(),
+          timestamp: new Date().toLocaleTimeString(),
+          message: "Oracle assigned Sequence",
+          type: messages["Oracle assigned Sequence"] as "proof" | "event" | "warn",
+        };
+        setLogs((prevLogs) => [...prevLogs, newLog]);
+      }
+        console.log(messages["Oracle assigned Sequence"] + " Oracle assigned Sequence");
+  }, [receipt]);
+
+  useEffect(() => {
+      // Add log for Seed Updated
+      if(seed !== "Start a game to generate a seed") {
+        const newLog: LogEntry = {
+          id: (logs.length + 1).toString(),
+          timestamp: new Date().toLocaleTimeString(),
+          message: "Seed Updated",
+          type: messages["Seed Updated"] as "proof" | "event" | "warn",
+        };
+        setLogs((prevLogs) => [...prevLogs, newLog]);
+      }
+        console.log(messages["Seed Updated"] + " Seed Updated");
+  }, [seed]);
+
+  
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(seed);
@@ -74,7 +121,7 @@ export default function FairnessPanel() {
           Current Seed
         </label>
         <div className="flex items-center gap-2 bg-input rounded p-2">
-          <code className="text-xs font-mono text-accent flex-1 break-all">
+          <code className="text-xs font-mono text-accent flex-1 break-all text-wrap">
             {seed}
           </code>
           <button
@@ -88,7 +135,7 @@ export default function FairnessPanel() {
       </div>
 
       {/* Difficulty Level */}
-      <div className="space-y-2">
+      {/* <div className="space-y-2">
         <div className="flex items-center justify-between">
           <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
             Difficulty
@@ -104,7 +151,7 @@ export default function FairnessPanel() {
         <p className="text-xs text-muted-foreground">
           Multiplier: {(1 + difficulty / 100).toFixed(2)}x
         </p>
-      </div>
+      </div> */}
 
       {/* Divider */}
       <div className="h-px bg-border" />
