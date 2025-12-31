@@ -78,7 +78,7 @@ export default function PostGameModal({
                 </div>
                 <div className="flex justify-between items-center text-muted-foreground">
                   <span>Multiplier:</span>
-                  <span className="text-secondary font-bold">{multiplier}x</span>
+                  <span className="text-secondary font-bold">{multiplier.toFixed(1)}x</span>
                 </div>
               </div>
             </div>

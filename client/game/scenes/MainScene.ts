@@ -10,6 +10,8 @@ export default class MainScene extends Phaser.Scene {
     emitter: Phaser.GameObjects.Particles.ParticleEmitter;
 
     score: number = 0;
+    multiplier: number = 1.0;
+    difficulty: number = 0;
     scoreText: Phaser.GameObjects.Text;
 
     rng: Phaser.Math.RandomDataGenerator;
@@ -45,7 +47,7 @@ export default class MainScene extends Phaser.Scene {
         this.load.image("pineapple_1", 'assets/pineapple_half_1.png');
         this.load.image("pineapple_2", 'assets/pineapple_half_2.png');
         
-        this.load.image("particle", "assets/star.png");  // Need to get a particle image
+        this.load.image("particle", "assets/star.png");
         this.load.image("heart", "assets/heart.png");
 
         this.seed = this.game.registry.get('randomSeed');
@@ -53,6 +55,7 @@ export default class MainScene extends Phaser.Scene {
     }
 
     create() {
+        const MAX_TIMESCALE = 0.7;
         this.add.image(400, 300, 'background');
         
         this.fruits = this.physics.add.group();
@@ -84,6 +87,42 @@ export default class MainScene extends Phaser.Scene {
 
         this.slash = this.add.graphics();
         this.spawnObject();
+
+        this.game.events.emit('log', {
+            type: 'event',
+            message: 'Game Started',
+            timestamp: new Date().toLocaleTimeString()
+        });
+
+        this.physics.world.timeScale = 2;
+
+        this.time.addEvent({
+            delay: 5000,
+            callback: () => {
+                this.physics.world.timeScale = 1;
+            },
+            callbackScope: this,
+            loop: false
+        });
+        
+        // Increase difficulty over time
+        this.time.addEvent({
+            delay: 7000,
+            callback: () => { // executes at 1, 0.9, 0.8, 0.7?
+                if(this.physics.world.timeScale > MAX_TIMESCALE){
+                    this.physics.world.timeScale -= 0.1;
+                    this.difficulty += 25;
+                    this.game.events.emit('difficulty', {
+                        timestamp: new Date().toLocaleTimeString(),
+                        message: `Difficulty Increased to ${(this.difficulty).toFixed(0)}%`,
+                        type: "event",
+                    });
+                }
+                this.multiplier += 0.1;
+            },
+            callbackScope: this,
+            loop: true
+        });
     }
 
     update() {
@@ -166,7 +205,8 @@ export default class MainScene extends Phaser.Scene {
         this.cameras.main.shake(500, 0.03);
         this.physics.pause();
         
-        this.game.events.emit('gameover', {score: this.score, seed: this.seed});
+        this.game.events.emit('gameover', {score: this.score, seed: this.seed, multiplier: this.multiplier, difficulty: this.difficulty});
+        this.game.events.destroy();
     }
 
     checkBounds() {

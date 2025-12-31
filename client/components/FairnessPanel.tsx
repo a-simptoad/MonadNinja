@@ -1,6 +1,8 @@
 import { Copy, Zap } from "lucide-react";
 import { useWaitForTransactionReceipt } from "wagmi";
 import { useState, useEffect } from "react";
+import { getGameInstance } from "@/game/Game";
+import { add } from "date-fns";
 
 interface LogEntry {
   id: string;
@@ -10,32 +12,7 @@ interface LogEntry {
 }
 
 export default function FairnessPanel({ txHash, seed }: { txHash: `0x${string}` | undefined; seed: string }) {
-  const [logs, setLogs] = useState<LogEntry[]>([
-    {
-      id: "1",
-      timestamp: "14:23:45",
-      message: "VRF Seed initialized",
-      type: "event",
-    },
-    {
-      id: "2",
-      timestamp: "14:23:46",
-      message: "Proof of Slice #1 verified",
-      type: "proof",
-    },
-    {
-      id: "3",
-      timestamp: "14:23:47",
-      message: "Multiplier: 1.25x",
-      type: "event",
-    },
-    {
-      id: "4",
-      timestamp: "14:23:48",
-      message: "Proof of Slice #2 verified",
-      type: "proof",
-    },
-  ]);
+  const [logs, setLogs] = useState<LogEntry[]>([]);
 
   const messages = {
         "Transaction Confirmed": "event", // Hash generated
@@ -47,6 +24,16 @@ export default function FairnessPanel({ txHash, seed }: { txHash: `0x${string}` 
       };
 
   const { data: receipt, isSuccess: isConfirmed } = useWaitForTransactionReceipt({ hash: txHash });
+  const game = getGameInstance();
+  const [difficulty, setDifficulty] = useState(0);
+  const [multiplier, setMultiplier] = useState(1);
+
+  const addLog = (log: LogEntry) => {
+    setLogs((prev) => {
+      const next = [...prev, log];
+      return next.slice(-10);
+    });
+  };
 
   useEffect(() => {
       // Add log for Transaction Confirmed
@@ -57,7 +44,7 @@ export default function FairnessPanel({ txHash, seed }: { txHash: `0x${string}` 
           message: "Transaction Confirmed",
           type: messages["Transaction Confirmed"] as "proof" | "event" | "warn",
         };
-        setLogs((prevLogs) => [...prevLogs, newLog]);
+        addLog(newLog);
       }
         console.log(messages["Transaction Confirmed"] + " Transaction Confirmed");
   }, [txHash]);
@@ -71,7 +58,7 @@ export default function FairnessPanel({ txHash, seed }: { txHash: `0x${string}` 
           message: "VRF request Submitted",
           type: messages["VRF request Submitted"] as "proof" | "event" | "warn",
         };
-        setLogs((prevLogs) => [...prevLogs, newLog]);
+        addLog(newLog);
       }
         console.log(messages["VRF request Submitted"] + " VRF request Submitted");
   }, [isConfirmed]);
@@ -85,7 +72,7 @@ export default function FairnessPanel({ txHash, seed }: { txHash: `0x${string}` 
           message: "Oracle assigned Sequence",
           type: messages["Oracle assigned Sequence"] as "proof" | "event" | "warn",
         };
-        setLogs((prevLogs) => [...prevLogs, newLog]);
+        addLog(newLog);
       }
         console.log(messages["Oracle assigned Sequence"] + " Oracle assigned Sequence");
   }, [receipt]);
@@ -99,12 +86,52 @@ export default function FairnessPanel({ txHash, seed }: { txHash: `0x${string}` 
           message: "Seed Updated",
           type: messages["Seed Updated"] as "proof" | "event" | "warn",
         };
-        setLogs((prevLogs) => [...prevLogs, newLog]);
+        addLog(newLog);
       }
         console.log(messages["Seed Updated"] + " Seed Updated");
   }, [seed]);
 
-  
+  useEffect(() => {
+    if(!game) return;
+
+    game?.events.once('log', (log: { type: "proof" | "event" | "warn"; message: string; timestamp: string }) => {
+      const newLog: LogEntry = {
+        id: (logs.length + 1).toString(),
+        timestamp: log.timestamp,
+        message: log.message,
+        type: log.type,
+      };
+      addLog(newLog);
+    });
+
+    game.events.off('difficulty');
+
+    game?.events.on('difficulty', (data: {message: string, timestamp: string, type: "proof" | "event" | "warn"}) => {
+      const newLog: LogEntry = {
+        id: (logs.length + 1).toString(),
+        timestamp: data.timestamp,
+        message: data.message,
+        type: data.type,
+      };
+      addLog(newLog);
+      setDifficulty((data.message.match(/(\d+(\.\d+)?)%/) ? parseFloat(data.message.match(/(\d+(\.\d+)?)%/)![1]) : 0));
+    });
+
+    game?.events.once('gameover', (data: {score: number, seed: string, multiplier: number}) => {
+      const newLog: LogEntry = {
+        id: (logs.length + 1).toString(),
+        timestamp: new Date().toLocaleTimeString(),
+        message: `Game Over`,
+        type: "event",
+      };
+      addLog(newLog);
+      setMultiplier(data.multiplier);
+    });
+    
+    return () => {
+      game.events.off('difficulty');
+    }
+  }, [game]);
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(seed);
@@ -135,23 +162,23 @@ export default function FairnessPanel({ txHash, seed }: { txHash: `0x${string}` 
       </div>
 
       {/* Difficulty Level */}
-      {/* <div className="space-y-2">
+      <div className="space-y-2">
         <div className="flex items-center justify-between">
           <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
             Difficulty
           </label>
-          <span className="text-sm font-bold text-secondary">{difficulty}%</span>
+          <span className="text-sm font-bold text-secondary">{difficulty.toFixed(0)}%</span>
         </div>
         <div className="w-full h-2 bg-input rounded-full overflow-hidden">
           <div
             className="h-full bg-gradient-to-r from-secondary to-accent transition-all duration-300"
-            style={{ width: `${difficulty}%` }}
+            style={{ width: `${difficulty.toFixed(0)}%` }}
           />
         </div>
         <p className="text-xs text-muted-foreground">
-          Multiplier: {(1 + difficulty / 100).toFixed(2)}x
+          Multiplier: {multiplier.toFixed(1)}x
         </p>
-      </div> */}
+      </div>
 
       {/* Divider */}
       <div className="h-px bg-border" />

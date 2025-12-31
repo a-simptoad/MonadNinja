@@ -117,8 +117,9 @@ export default function GameArena({ txHash, setSeed, setTxHash }: { txHash: `0x$
         if (game) {
           clearInterval(intervalId);
           game.events.off('gameover'); 
-          game.events.on('gameover', (data: {score: number, seed: string}) => {
+          game.events.on('gameover', (data: {score: number, seed: string, multiplier: number}) => {
             setScore(data.score);
+            setMultiplier(data.multiplier);
             setShowPostGameModal(true);
           });
         }
