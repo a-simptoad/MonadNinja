@@ -8,11 +8,25 @@ import { IEntropyV2 } from "@pythnetwork/entropy-sdk-solidity/IEntropyV2.sol";
 contract MonadNinja is IEntropyConsumer {
     event RandomnessRequested(uint64 sequenceNumber);
     event RandomnessResult(uint64 sequenceNumber, uint256 randomNumber);
+    event WinnerTxFailed();
 
     IEntropyV2 public entropy;
+    address[] private players;
+    mapping(address => bool) private played;
+    mapping(address => string) private names;
+    mapping(address => uint256) private scores;
+    uint8 private count;
 
     constructor(address entropyAddress) {
         entropy = IEntropyV2(entropyAddress);
+    }
+
+    function updateScore(string memory name, uint256 score) external {
+        if(played[msg.sender]){
+            names[msg.sender] = name;
+            scores[msg.sender] = score;
+        }
+        played[msg.sender] = false;
     }
 
     function requestRandomNumber() external payable {
@@ -21,7 +35,20 @@ contract MonadNinja is IEntropyConsumer {
         // Request the random number with the callback
         uint64 sequenceNumber = entropy.requestV2{ value: fee }();
         // Store the sequence number to identify the callback request
+        played[msg.sender] = true;
 
+        // check if msg.sender is already on players array
+        bool exists = false;
+        for (uint256 i = 0; i < players.length; i++) {
+            if (players[i] == msg.sender) {
+                exists = true;
+                break;
+            }
+        }
+
+        if (!exists) {
+            players.push(msg.sender);
+        }
         emit RandomnessRequested(sequenceNumber);
     }
 
@@ -38,10 +65,29 @@ contract MonadNinja is IEntropyConsumer {
         address provider,
         bytes32 randomNumber
     ) internal override {
+        count++;
+        if(count == 50) {
+            count = 0;
+            chooseWinner(uint256(randomNumber));
+        }
         emit RandomnessResult(sequence, uint256(randomNumber));
     }
 
     function getEntropy() internal view override returns (address) {
         return address(entropy);
+    }
+
+    function getInfo(address sender) internal view returns(string memory name, uint256 score){
+        return (names[sender], scores[sender]);
+    }
+    
+    function getPlayers() internal view returns(address[] memory){
+        return players;
+    }
+
+    function chooseWinner(uint256 random) private {
+        address winner = players[(random % players.length)];
+        (bool ok,) = winner.call{value: address(this).balance}("");
+        if(!ok) emit WinnerTxFailed();
     }
 }

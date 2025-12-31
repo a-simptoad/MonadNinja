@@ -73,7 +73,7 @@ export default function GameArena({ txHash, setSeed, setTxHash }: { txHash: `0x$
 
         try {
             const logs = await publicClient.getContractEvents({
-                address: `0x5b48bb90b908c0e9fd3190c1dc14c5ca25841a8c`,
+                address: `0x8E2EE16ef1d82A3c4CAD948b71D46F05023e8533`,
                 abi: abi,
                 eventName: 'RandomnessResult',
                 fromBlock: receipt ? receipt.blockNumber : 'earliest', 
@@ -140,7 +140,7 @@ export default function GameArena({ txHash, setSeed, setTxHash }: { txHash: `0x$
     setTxHash(undefined);
     
     writeContract({
-      address: `0x5b48bb90b908c0e9fd3190c1dc14c5ca25841a8c`,
+      address: `0x8E2EE16ef1d82A3c4CAD948b71D46F05023e8533`,
       abi: abi,
       functionName: 'requestRandomNumber',
       account: address,
@@ -177,7 +177,7 @@ export default function GameArena({ txHash, setSeed, setTxHash }: { txHash: `0x$
 
               {!isProcessing && (
                   <button onClick={handleStart} className="px-8 py-3 bg-gradient-to-r from-secondary to-accent text-accent-foreground font-bold rounded-lg hover:opacity-90 transition-opacity">
-                    Start Game (0.15 MON)
+                    Start Game (0.20 MON)
                   </button>
               )}
             </div>
