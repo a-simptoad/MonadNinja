@@ -36,7 +36,7 @@ export default function FairnessPanel({ txHash, seed }: { txHash: `0x${string}` 
       // Add log for Transaction Confirmed
       if(txHash) {
         const newLog: LogEntry = {
-          id: (logs.length + 1).toString(),
+          id: new Date().getTime().toString() + Math.random().toString(),
           timestamp: new Date().toLocaleTimeString(),
           message: "Transaction Confirmed",
           type: messages["Transaction Confirmed"] as "proof" | "event" | "warn",
@@ -50,7 +50,7 @@ export default function FairnessPanel({ txHash, seed }: { txHash: `0x${string}` 
       // Add log for VRF request Submitted
       if(isConfirmed) {
         const newLog: LogEntry = {
-          id: (logs.length + 1).toString(),
+          id: new Date().getTime().toString() + Math.random().toString(),
           timestamp: new Date().toLocaleTimeString(),
           message: "VRF request Submitted",
           type: messages["VRF request Submitted"] as "proof" | "event" | "warn",
@@ -64,7 +64,7 @@ export default function FairnessPanel({ txHash, seed }: { txHash: `0x${string}` 
       // Add log for Seed Updated
       if(receipt) {
         const newLog: LogEntry = {
-          id: (logs.length + 1).toString(),
+          id: new Date().getTime().toString() + Math.random().toString(),
           timestamp: new Date().toLocaleTimeString(),
           message: "Oracle assigned Sequence",
           type: messages["Oracle assigned Sequence"] as "proof" | "event" | "warn",
@@ -78,7 +78,7 @@ export default function FairnessPanel({ txHash, seed }: { txHash: `0x${string}` 
       // Add log for Seed Updated
       if(seed !== "Start a game to generate a seed") {
         const newLog: LogEntry = {
-          id: (logs.length + 1).toString(),
+          id: new Date().getTime().toString() + Math.random().toString(),
           timestamp: new Date().toLocaleTimeString(),
           message: "Seed Updated",
           type: messages["Seed Updated"] as "proof" | "event" | "warn",
@@ -93,7 +93,7 @@ export default function FairnessPanel({ txHash, seed }: { txHash: `0x${string}` 
 
     game?.events.once('log', (log: { type: "proof" | "event" | "warn"; message: string; timestamp: string }) => {
       const newLog: LogEntry = {
-        id: (logs.length + 1).toString(),
+        id: new Date().getTime().toString() + Math.random().toString(),
         timestamp: log.timestamp,
         message: log.message,
         type: log.type,
@@ -105,7 +105,7 @@ export default function FairnessPanel({ txHash, seed }: { txHash: `0x${string}` 
 
     game?.events.on('difficulty', (data: {message: string, timestamp: string, type: "proof" | "event" | "warn"}) => {
       const newLog: LogEntry = {
-        id: (logs.length + 1).toString(),
+        id: new Date().getTime().toString() + Math.random().toString(),
         timestamp: data.timestamp,
         message: data.message,
         type: data.type,
@@ -116,7 +116,7 @@ export default function FairnessPanel({ txHash, seed }: { txHash: `0x${string}` 
 
     game?.events.once('gameover', (data: {score: number, seed: string, multiplier: number}) => {
       const newLog: LogEntry = {
-        id: (logs.length + 1).toString(),
+        id: new Date().getTime().toString() + Math.random().toString(),
         timestamp: new Date().toLocaleTimeString(),
         message: `Game Over`,
         type: "event",
