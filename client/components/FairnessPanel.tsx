@@ -29,10 +29,7 @@ export default function FairnessPanel({ txHash, seed }: { txHash: `0x${string}` 
   const [multiplier, setMultiplier] = useState(1);
 
   const addLog = (log: LogEntry) => {
-    setLogs((prev) => {
-      const next = [...prev, log];
-      return next.slice(-10);
-    });
+    setLogs((prev) => [log, ...prev.slice(0, 9)]); // Keep only the latest 10 logs
   };
 
   useEffect(() => {

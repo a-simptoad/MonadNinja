@@ -13,7 +13,7 @@ import { parseEventLogs } from "viem";
 import { abi } from "@/config/abi";
 import { monadTestnet } from "@/config/wagmi";
 
-export default function GameArena({ txHash, setSeed, setTxHash }: { txHash: `0x${string}` | undefined; setSeed: (seed: string) => void; setTxHash: (hash: `0x${string}` | undefined) => void }) {
+export default function GameArena({ contractAddress, txHash, setSeed, setTxHash }: { contractAddress: `${string}` | undefined; txHash: `0x${string}` | undefined; setSeed: (seed: string) => void; setTxHash: (hash: `0x${string}` | undefined) => void }) {
   const [gameStarted, setGameStarted] = useState(false);
   const [showPostGameModal, setShowPostGameModal] = useState(false);
   const [score, setScore] = useState(0);
@@ -73,7 +73,7 @@ export default function GameArena({ txHash, setSeed, setTxHash }: { txHash: `0x$
 
         try {
             const logs = await publicClient.getContractEvents({
-                address: `0x8E2EE16ef1d82A3c4CAD948b71D46F05023e8533`,
+                address: contractAddress as `0x${string}`,
                 abi: abi,
                 eventName: 'RandomnessResult',
                 fromBlock: receipt ? receipt.blockNumber : 'earliest', 
@@ -140,7 +140,7 @@ export default function GameArena({ txHash, setSeed, setTxHash }: { txHash: `0x$
     setTxHash(undefined);
     
     writeContract({
-      address: `0x8E2EE16ef1d82A3c4CAD948b71D46F05023e8533`,
+      address: contractAddress as `0x${string}`,
       abi: abi,
       functionName: 'requestRandomNumber',
       account: address,

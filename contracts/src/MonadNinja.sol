@@ -77,11 +77,11 @@ contract MonadNinja is IEntropyConsumer {
         return address(entropy);
     }
 
-    function getInfo(address sender) internal view returns(string memory name, uint256 score){
+    function getInfo(address sender) external view returns(string memory name, uint256 score){
         return (names[sender], scores[sender]);
     }
     
-    function getPlayers() internal view returns(address[] memory){
+    function getPlayers() external view returns(address[] memory){
         return players;
     }
 

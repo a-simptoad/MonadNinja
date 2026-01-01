@@ -29,7 +29,7 @@ export default function Index() {
           <div className="flex flex-col md:flex-row gap-4">
             {/* Game Arena */}
             <div className="flex-1 min-w-0">
-              <GameArena txHash={txHash} setSeed={setSeed} setTxHash={setTxHash}/>
+              <GameArena contractAddress={"0xe599053caC076EB4de7EF7772f5bE66f2AaF755b"} txHash={txHash} setSeed={setSeed} setTxHash={setTxHash}/>
             </div>
 
             {/* Fairness Sidebar */}

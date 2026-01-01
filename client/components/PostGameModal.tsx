@@ -1,5 +1,9 @@
-import { X, Share2, ExternalLink, Star } from "lucide-react";
+import { X, ExternalLink, Star, Save, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useWriteContract, useWaitForTransactionReceipt, useAccount } from "wagmi";
+import { useState, useEffect } from "react";
+import { abi } from "@/config/abi";
+import { monadTestnet } from "@/config/wagmi";
 
 interface PostGameModalProps {
   isOpen: boolean;
@@ -7,6 +11,7 @@ interface PostGameModalProps {
   score: number;
   multiplier: number;
   txHash: string;
+  name?: string;
 }
 
 export default function PostGameModal({
@@ -15,8 +20,43 @@ export default function PostGameModal({
   score,
   multiplier,
   txHash,
+  name,
 }: PostGameModalProps) {
   const finalScore = Math.floor(score * multiplier);
+  const { address } = useAccount();
+  
+  // State for the name input
+  const [playerName, setPlayerName] = useState(name || "");
+  const [hasSubmitted, setHasSubmitted] = useState(false);
+
+  // Wagmi Hooks for writing to contract
+  const { data: hash, writeContract, isPending: isWritePending, error } = useWriteContract();
+
+  const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({ 
+    hash 
+  });
+
+  // Update local state if prop changes
+  useEffect(() => {
+    if (name) setPlayerName(name);
+  }, [name]);
+
+  // Handle the contract call
+  const handleUpdateScore = () => {
+    if (!playerName.trim()) return;
+
+    writeContract({
+      address: '0xe599053caC076EB4de7EF7772f5bE66f2AaF755b', // Your Contract Address
+      abi: abi,
+      functionName: 'updateScore',
+      args: [playerName, BigInt(finalScore)], // name (string), score (uint256)
+      chain: monadTestnet,
+      account: address,
+    });
+    setHasSubmitted(true);
+  };
+
+  const isProcessing = isWritePending || isConfirming;
 
   return (
     <AnimatePresence>
@@ -43,14 +83,6 @@ export default function PostGameModal({
 
             {/* Header */}
             <div className="text-center mb-6">
-              <div className="flex justify-center gap-1 mb-3">
-                {[...Array(3)].map((_, i) => (
-                  <Star
-                    key={i}
-                    className="w-8 h-8 text-secondary fill-secondary"
-                  />
-                ))}
-              </div>
               <h2 className="text-3xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
                 GAME OVER
               </h2>
@@ -86,23 +118,79 @@ export default function PostGameModal({
             {/* Transaction Hash */}
             <div className="mb-6 p-3 bg-input rounded border border-border">
               <p className="text-xs text-muted-foreground uppercase font-semibold mb-2">
-                Verified TX
+                Game Session TX
               </p>
-              <code className="text-xs font-mono text-accent break-all text-wrap">
-                {txHash}
+              <code className="text-xs font-mono text-accent break-all text-wrap block">
+                {txHash || "No TX Hash"}
               </code>
             </div>
 
             {/* Action Buttons */}
             <div className="space-y-3">
+              
+              {/* --- NEW: Update Score Section --- */}
+              <div className="bg-slate-900/50 p-3 rounded-lg border border-border space-y-3">
+                
+                {!isConfirmed && !hasSubmitted ? (
+                    <>
+                        {/* Name Input */}
+                        <div>
+                            <label className="text-xs text-muted-foreground uppercase font-bold ml-1">Enter Nickname</label>
+                            <input 
+                                type="text" 
+                                value={playerName}
+                                onChange={(e) => setPlayerName(e.target.value)}
+                                placeholder="Ninja Name"
+                                maxLength={15}
+                                className="w-full mt-1 px-3 py-2 bg-black border border-input rounded focus:outline-none focus:border-primary text-white placeholder:text-gray-600"
+                            />
+                        </div>
+
+                        {/* Submit Button */}
+                        <button 
+                            onClick={handleUpdateScore}
+                            disabled={isProcessing || !playerName.trim()}
+                            className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-secondary to-accent hover:opacity-90 transition-opacity text-white font-bold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            {isProcessing ? (
+                                <>
+                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                    Saving...
+                                </>
+                            ) : (
+                                <>
+                                    <Save className="w-4 h-4" />
+                                    Save to Leaderboard
+                                </>
+                            )}
+                        </button>
+                    </>
+                ) : isConfirmed ? (
+                    <div className="text-center py-2">
+                        <p className="text-green-400 font-bold flex items-center justify-center gap-2">
+                            <Star className="w-4 h-4 fill-green-400" />
+                            Score Saved to Chain!
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">Check the leaderboard to see your rank.</p>
+                    </div>
+                ) : (
+                    // Transaction sent but waiting for confirmation
+                    <div className="text-center py-2 text-yellow-500 flex flex-col items-center">
+                         <Loader2 className="w-6 h-6 animate-spin mb-2" />
+                         <span className="font-bold text-sm">Confirming Transaction...</span>
+                    </div>
+                )}
+                
+                {/* Error Message */}
+                {error && (
+                    <p className="text-xs text-red-500 text-center">{error.message.slice(0, 50)}...</p>
+                )}
+              </div>
+              {/* --- END New Section --- */}
+
               <button className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-primary to-primary hover:opacity-90 transition-opacity text-primary-foreground font-bold rounded-lg">
                 <ExternalLink className="w-4 h-4" />
                 Verify on Explorer
-              </button>
-
-              <button className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-secondary to-accent hover:opacity-90 transition-opacity text-white font-bold rounded-lg">
-                <Share2 className="w-4 h-4" />
-                Share to X
               </button>
 
               <button
