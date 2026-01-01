@@ -133,6 +133,7 @@ export default class MainScene extends Phaser.Scene {
             delay: 7000,
             loop: true,
             callback: () => {
+                if(this.scene.isActive() === false) return;
                 if (this.physics.world.timeScale > MAX_TIMESCALE) {
                     this.physics.world.timeScale -= 0.1;
                     this.difficulty += 25;
@@ -214,6 +215,7 @@ export default class MainScene extends Phaser.Scene {
     }
 
     handleBombHit() {
+        this.cameras.main.shake(500, 0.03);
         this.spawnTimer?.remove();
         this.physics.pause();
 
@@ -223,6 +225,8 @@ export default class MainScene extends Phaser.Scene {
             multiplier: this.multiplier,
             difficulty: this.difficulty,
         });
+
+        this.scene.pause();
     }
 
     checkBounds() {
