@@ -130,12 +130,12 @@ export default class MainScene extends Phaser.Scene {
         });
 
         this.time.addEvent({
-            delay: 7000,
+            delay: 15000,
             loop: true,
             callback: () => {
                 if(this.scene.isActive() === false) return;
-                if (this.physics.world.timeScale > MAX_TIMESCALE) {
-                    this.physics.world.timeScale -= 0.1;
+                if (this.difficulty < 100) {
+                    this.physics.world.timeScale -= 0.14;
                     this.difficulty += 25;
 
                     this.game.events.emit("difficulty", {

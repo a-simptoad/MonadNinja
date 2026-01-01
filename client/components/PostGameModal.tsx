@@ -25,31 +25,27 @@ export default function PostGameModal({
   const finalScore = Math.floor(score * multiplier);
   const { address } = useAccount();
   
-  // State for the name input
   const [playerName, setPlayerName] = useState(name || "");
   const [hasSubmitted, setHasSubmitted] = useState(false);
 
-  // Wagmi Hooks for writing to contract
   const { data: hash, writeContract, isPending: isWritePending, error } = useWriteContract();
 
   const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({ 
     hash 
   });
 
-  // Update local state if prop changes
   useEffect(() => {
     if (name) setPlayerName(name);
   }, [name]);
 
-  // Handle the contract call
   const handleUpdateScore = () => {
     if (!playerName.trim()) return;
 
     writeContract({
-      address: '0xe599053caC076EB4de7EF7772f5bE66f2AaF755b', // Your Contract Address
+      address: '0x9524B61A20B1AbCBab037A8E1D3E7f8DEd728328',
       abi: abi,
       functionName: 'updateScore',
-      args: [playerName, BigInt(finalScore)], // name (string), score (uint256)
+      args: [playerName, BigInt(finalScore)],
       chain: monadTestnet,
       account: address,
     });
@@ -128,12 +124,10 @@ export default function PostGameModal({
             {/* Action Buttons */}
             <div className="space-y-3">
               
-              {/* --- NEW: Update Score Section --- */}
               <div className="bg-slate-900/50 p-3 rounded-lg border border-border space-y-3">
                 
                 {!isConfirmed && !hasSubmitted ? (
                     <>
-                        {/* Name Input */}
                         <div>
                             <label className="text-xs text-muted-foreground uppercase font-bold ml-1">Enter Nickname</label>
                             <input 
@@ -146,7 +140,6 @@ export default function PostGameModal({
                             />
                         </div>
 
-                        {/* Submit Button */}
                         <button 
                             onClick={handleUpdateScore}
                             disabled={isProcessing || !playerName.trim()}
@@ -174,19 +167,16 @@ export default function PostGameModal({
                         <p className="text-xs text-muted-foreground mt-1">Check the leaderboard to see your rank.</p>
                     </div>
                 ) : (
-                    // Transaction sent but waiting for confirmation
                     <div className="text-center py-2 text-yellow-500 flex flex-col items-center">
                          <Loader2 className="w-6 h-6 animate-spin mb-2" />
                          <span className="font-bold text-sm">Confirming Transaction...</span>
                     </div>
                 )}
                 
-                {/* Error Message */}
                 {error && (
                     <p className="text-xs text-red-500 text-center">{error.message.slice(0, 50)}...</p>
                 )}
               </div>
-              {/* --- END New Section --- */}
 
               <button className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-primary to-primary hover:opacity-90 transition-opacity text-primary-foreground font-bold rounded-lg">
                 <ExternalLink className="w-4 h-4" />

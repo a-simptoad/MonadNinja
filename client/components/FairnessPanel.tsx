@@ -2,7 +2,6 @@ import { Copy, Zap } from "lucide-react";
 import { useWaitForTransactionReceipt } from "wagmi";
 import { useState, useEffect } from "react";
 import { getGameInstance } from "@/game/Game";
-import { add } from "date-fns";
 
 interface LogEntry {
   id: string;

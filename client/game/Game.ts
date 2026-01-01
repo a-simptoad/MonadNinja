@@ -4,7 +4,6 @@ import { gameConfig } from "./config";
 let game: Phaser.Game | null = null;
 
 export function startGame(seed: string) {
-  // Always destroy old game when starting with a new seed
   if (game) {
     game.destroy(true);
     game = null;
@@ -12,7 +11,6 @@ export function startGame(seed: string) {
 
   game = new Phaser.Game(gameConfig);
 
-  // IMPORTANT: start scene with seed
   game.scene.start("MainScene", { seed });
 }
 
