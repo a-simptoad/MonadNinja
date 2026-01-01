@@ -42,7 +42,6 @@ export default function FairnessPanel({ txHash, seed }: { txHash: `0x${string}` 
         };
         addLog(newLog);
       }
-        console.log(messages["Transaction Confirmed"] + " Transaction Confirmed");
   }, [txHash]);
 
   useEffect(() => {
@@ -56,7 +55,6 @@ export default function FairnessPanel({ txHash, seed }: { txHash: `0x${string}` 
         };
         addLog(newLog);
       }
-        console.log(messages["VRF request Submitted"] + " VRF request Submitted");
   }, [isConfirmed]);
 
   useEffect(() => {
@@ -70,7 +68,6 @@ export default function FairnessPanel({ txHash, seed }: { txHash: `0x${string}` 
         };
         addLog(newLog);
       }
-        console.log(messages["Oracle assigned Sequence"] + " Oracle assigned Sequence");
   }, [receipt]);
 
   useEffect(() => {
@@ -84,7 +81,6 @@ export default function FairnessPanel({ txHash, seed }: { txHash: `0x${string}` 
         };
         addLog(newLog);
       }
-        console.log(messages["Seed Updated"] + " Seed Updated");
   }, [seed]);
 
   useEffect(() => {
@@ -171,9 +167,6 @@ export default function FairnessPanel({ txHash, seed }: { txHash: `0x${string}` 
             style={{ width: `${difficulty.toFixed(0)}%` }}
           />
         </div>
-        <p className="text-xs text-muted-foreground">
-          Multiplier: {multiplier.toFixed(1)}x
-        </p>
       </div>
 
       {/* Divider */}

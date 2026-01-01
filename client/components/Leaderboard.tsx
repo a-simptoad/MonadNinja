@@ -68,7 +68,7 @@ export default function Leaderboard() {
 
     entries.sort((a, b) => b.score - a.score);
 
-    return entries.map((entry, index) => ({
+    return entries.slice(0, 7).map((entry, index) => ({
       ...entry,
       rank: index + 1
     }));
@@ -81,7 +81,7 @@ export default function Leaderboard() {
     <div className="w-full bg-card border border-border rounded-lg p-4 md:p-6">
       <div className="flex items-center gap-3 mb-4">
         <Trophy className="w-6 h-6 text-yellow-500" />
-        <h2 className="text-xl font-bold text-foreground">Top Slicers</h2>
+        <h2 className="text-xl font-bold text-foreground">Top 7 Slicers</h2>
       </div>
 
       <div className="overflow-x-auto">

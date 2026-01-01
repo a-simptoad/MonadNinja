@@ -52,6 +52,11 @@ export default function PostGameModal({
     setHasSubmitted(true);
   };
 
+  const handleVerifyOnExplorer = () => {
+    const url = `https://testnet.monad.xyz/tx/${txHash}`;
+    window.open(url, "_blank");
+  };
+
   const isProcessing = isWritePending || isConfirming;
 
   return (
@@ -178,7 +183,7 @@ export default function PostGameModal({
                 )}
               </div>
 
-              <button className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-primary to-primary hover:opacity-90 transition-opacity text-primary-foreground font-bold rounded-lg">
+              <button onClick={handleVerifyOnExplorer} className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-primary to-primary hover:opacity-90 transition-opacity text-primary-foreground font-bold rounded-lg">
                 <ExternalLink className="w-4 h-4" />
                 Verify on Explorer
               </button>

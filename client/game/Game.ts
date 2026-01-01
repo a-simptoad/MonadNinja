@@ -10,8 +10,7 @@ export function startGame(seed: string) {
   }
 
   game = new Phaser.Game(gameConfig);
-
-  game.scene.start("MainScene", { seed });
+  game.scene.start("HowToPlayScene", { seed });
 }
 
 export function getGameInstance(): Phaser.Game | null {

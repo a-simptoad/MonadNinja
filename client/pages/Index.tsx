@@ -41,16 +41,6 @@ export default function Index() {
 
         {/* Leaderboard */}
         <Leaderboard />
-
-        {/* Demo Button for Post-Game Modal */}
-        <div className="mt-8 flex justify-center">
-          <button
-            onClick={() => setShowPostGameModal(true)}
-            className="px-6 py-3 bg-primary hover:opacity-90 transition-opacity text-primary-foreground font-bold rounded-lg text-sm"
-          >
-            Demo: Show Post-Game Modal
-          </button>
-        </div>
       </main>
 
       {/* Post-Game Modal */}
