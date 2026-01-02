@@ -72,7 +72,7 @@ export default function PostGameModal({
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.95, opacity: 0 }}
-            className="w-full max-w-md bg-card border-2 border-primary rounded-lg p-6 relative"
+            className="w-full max-w-md bg-card border-2 border-lime-600 rounded-lg p-6 relative"
           >
             {/* Close Button */}
             <button
@@ -84,7 +84,7 @@ export default function PostGameModal({
 
             {/* Header */}
             <div className="text-center mb-6">
-              <h2 className="text-3xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+              <h2 className="text-3xl font-bold bg-lime-600 bg-clip-text text-transparent">
                 GAME OVER
               </h2>
               <p className="text-sm text-muted-foreground mt-2">
@@ -98,7 +98,7 @@ export default function PostGameModal({
                 <p className="text-xs uppercase text-muted-foreground font-semibold tracking-wider mb-1">
                   Final Score
                 </p>
-                <p className="text-5xl font-black bg-gradient-to-r from-secondary to-accent bg-clip-text text-transparent">
+                <p className="text-5xl font-black bg-lime-600 bg-clip-text text-transparent">
                   {finalScore.toLocaleString()}
                 </p>
               </div>
@@ -111,7 +111,7 @@ export default function PostGameModal({
                 </div>
                 <div className="flex justify-between items-center text-muted-foreground">
                   <span>Multiplier:</span>
-                  <span className="text-secondary font-bold">{multiplier.toFixed(1)}x</span>
+                  <span className="text-yellow-400 font-bold">{multiplier.toFixed(1)}x</span>
                 </div>
               </div>
             </div>
@@ -121,7 +121,7 @@ export default function PostGameModal({
               <p className="text-xs text-muted-foreground uppercase font-semibold mb-2">
                 Game Session TX
               </p>
-              <code className="text-xs font-mono text-accent break-all text-wrap block">
+              <code className="text-xs font-mono text-yellow-200 break-all text-wrap block">
                 {txHash || "No TX Hash"}
               </code>
             </div>
@@ -141,14 +141,14 @@ export default function PostGameModal({
                                 onChange={(e) => setPlayerName(e.target.value)}
                                 placeholder="Ninja Name"
                                 maxLength={15}
-                                className="w-full mt-1 px-3 py-2 bg-black border border-input rounded focus:outline-none focus:border-primary text-white placeholder:text-gray-600"
+                                className="w-full mt-1 px-3 py-2 bg-black border border-input rounded focus:outline-none focus:border-lime-600 text-white placeholder:text-gray-600"
                             />
                         </div>
 
                         <button 
                             onClick={handleUpdateScore}
                             disabled={isProcessing || !playerName.trim()}
-                            className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-secondary to-accent hover:opacity-90 transition-opacity text-white font-bold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-lime-600 hover:opacity-90 transition-opacity text-white font-bold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {isProcessing ? (
                                 <>
@@ -183,7 +183,7 @@ export default function PostGameModal({
                 )}
               </div>
 
-              <button onClick={handleVerifyOnExplorer} className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-primary to-primary hover:opacity-90 transition-opacity text-primary-foreground font-bold rounded-lg">
+              <button onClick={handleVerifyOnExplorer} className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-lime-600 hover:opacity-90 transition-opacity text-primary-foreground font-bold rounded-lg">
                 <ExternalLink className="w-4 h-4" />
                 Verify on Explorer
               </button>

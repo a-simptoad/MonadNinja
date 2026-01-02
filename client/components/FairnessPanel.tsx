@@ -189,9 +189,9 @@ export default function FairnessPanel({ txHash, seed }: { txHash: `0x${string}` 
                   </span>
                   <span className="flex-1">
                     {log.type === "proof" ? (
-                      <span className="text-accent">[PROOF]</span>
+                      <span className="text-yellow-200">[PROOF]</span>
                     ) : (
-                      <span className="text-secondary">[EVENT]</span>
+                      <span className="text-green-700">[EVENT]</span>
                     )}{" "}
                     {log.message}
                   </span>
