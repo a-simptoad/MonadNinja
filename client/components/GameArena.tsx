@@ -48,7 +48,6 @@ export default function GameArena({ contractAddress, txHash, setSeed, setTxHash 
   useEffect(() => {
     if (isConfirmed && receipt && !sequenceNumber) {
         try {
-            console.log("Transaction confirmed. Parsing for Sequence Number...");
             const logs = parseEventLogs({
                 abi: abi,
                 eventName: 'RandomnessRequested',
@@ -57,7 +56,6 @@ export default function GameArena({ contractAddress, txHash, setSeed, setTxHash 
 
             if (logs.length > 0) {
                 const seq = logs[0].args.sequenceNumber;
-                console.log("🎟️ Sequence Number Found:", seq.toString());
                 setSequenceNumber(seq); 
             } else {
                 console.error("Could not find RandomnessRequested event in logs!");
@@ -88,7 +86,6 @@ export default function GameArena({ contractAddress, txHash, setSeed, setTxHash 
             
             if (match) {
               const seed = match.args.randomNumber.toString();
-                console.log("✅ ORACLE FOUND!", seed);
                 setRandomNumber(seed);
                 setSeed(seed);
                 setGameStarted(true);
@@ -159,12 +156,12 @@ export default function GameArena({ contractAddress, txHash, setSeed, setTxHash 
 
   return (
     <div className="w-full flex flex-col gap-4">
-      <div className="w-full bg-card border-2 border-primary rounded-lg overflow-hidden">
+      <div className="w-full bg-card border-2 border-lime-500 rounded-lg overflow-hidden">
         <div className="relative w-full bg-gradient-to-b from-card to-slate-950 aspect-video flex items-center justify-center">
           
           {!gameStarted ? (
             <div className="text-center">
-               <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center mx-auto mb-4">
+               <div className="w-20 h-20 rounded-full bg-lime-900 flex items-center justify-center mx-auto mb-4">
                 <div className="w-16 h-16 rounded-full bg-card flex items-center justify-center text-3xl animate-pulse">
                   {isWaitingForOracle ? "🔮" : (isProcessing ? "⏳" : "🥷")}
                 </div>
@@ -181,7 +178,7 @@ export default function GameArena({ contractAddress, txHash, setSeed, setTxHash 
               </p>
 
               {!isProcessing && (
-                  <button onClick={handleStart} className="px-8 py-3 bg-gradient-to-r from-secondary to-accent text-accent-foreground font-bold rounded-lg hover:opacity-90 transition-opacity">
+                  <button onClick={handleStart} className="px-8 py-3 bg-lime-600 text-accent-foreground font-bold rounded-lg hover:opacity-90 transition-opacity">
                     Start Game (0.20 MON)
                   </button>
               )}

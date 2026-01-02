@@ -31,7 +31,6 @@ export default class MainScene extends Phaser.Scene {
 
     init(data: { seed: string }) {
         this.seed = data.seed;
-        console.log(this.seed, "received in MainScene init");
         this.rng = new Phaser.Math.RandomDataGenerator();
     }
 
@@ -75,9 +74,6 @@ export default class MainScene extends Phaser.Scene {
 
         let s = this.seed.toString();
         this.rng.init(s);
-
-        console.log("Seed:", this.seed);
-        console.log("RNG test:", this.rng.frac(), this.rng.frac());
 
         this.add.image(this.worldWidth / 2, this.worldHeight / 2, "background");
 

@@ -137,7 +137,7 @@ export default function Leaderboard() {
                     </div>
                   </td>
                   <td className="py-4 px-3 text-right">
-                    <span className="font-bold text-primary font-mono text-lg">
+                    <span className="font-bold text-white font-mono text-lg">
                       {entry.score.toLocaleString()}
                     </span>
                   </td>
@@ -148,7 +148,7 @@ export default function Leaderboard() {
                       rel="noopener noreferrer"
                       className="inline-flex items-center justify-center p-2 hover:bg-border rounded transition-colors group opacity-50 hover:opacity-100"
                     >
-                      <ExternalLink className="w-4 h-4 text-primary" />
+                      <ExternalLink className="w-4 h-4 text-white" />
                     </a>
                   </td>
                 </tr>

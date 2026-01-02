@@ -140,7 +140,7 @@ export default function FairnessPanel({ txHash, seed }: { txHash: `0x${string}` 
           Current Seed
         </label>
         <div className="flex items-center gap-2 bg-input rounded p-2">
-          <code className="text-xs font-mono text-accent flex-1 break-all text-wrap">
+          <code className="text-xs font-mono text-yellow-200 flex-1 break-all text-wrap">
             {seed}
           </code>
           <button
@@ -159,11 +159,11 @@ export default function FairnessPanel({ txHash, seed }: { txHash: `0x${string}` 
           <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
             Difficulty
           </label>
-          <span className="text-sm font-bold text-secondary">{difficulty.toFixed(0)}%</span>
+          <span className="text-sm font-bold text-white">{difficulty.toFixed(0)}%</span>
         </div>
         <div className="w-full h-2 bg-input rounded-full overflow-hidden">
           <div
-            className="h-full bg-gradient-to-r from-secondary to-accent transition-all duration-300"
+            className="h-full bg-yellow-200 transition-all duration-300"
             style={{ width: `${difficulty.toFixed(0)}%` }}
           />
         </div>
@@ -204,7 +204,7 @@ export default function FairnessPanel({ txHash, seed }: { txHash: `0x${string}` 
 
       {/* Footer */}
       <div className="flex items-center gap-2 text-xs text-muted-foreground">
-        <Zap className="w-3 h-3 text-accent" />
+        <Zap className="w-3 h-3 text-yellow-200" />
         <span>On-chain verified</span>
       </div>
     </div>
