@@ -38,7 +38,7 @@ export default function GameArena({ contractAddress, txHash, setSeed, setTxHash 
       onSuccess: (hash) => setTxHash(hash),
       onError: (err) => {
         if(err.name == "ContractFunctionExecutionError"){
-          window.alert('Insufficient Balance');
+          window.alert('Insufficient Balance\n\nCopy the embedded wallet address and fund it with testnet MON to play the game.');
           return;
         }
         window.alert('Tx error:' + err.message);},
