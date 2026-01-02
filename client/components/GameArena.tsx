@@ -36,7 +36,12 @@ export default function GameArena({ contractAddress, txHash, setSeed, setTxHash 
   const { writeContract, isPending: isWalletOpening } = useWriteContract({ 
     mutation: { 
       onSuccess: (hash) => setTxHash(hash),
-      onError: (err) => console.error('Tx error:', err),
+      onError: (err) => {
+        if(err.name == "ContractFunctionExecutionError"){
+          window.alert('Insufficient Balance');
+          return;
+        }
+        window.alert('Tx error:' + err.message);},
     }, 
   });
 

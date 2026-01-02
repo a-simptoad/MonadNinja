@@ -8,14 +8,14 @@ import { IEntropyV2 } from "@pythnetwork/entropy-sdk-solidity/IEntropyV2.sol";
 contract MonadNinja is IEntropyConsumer {
     event RandomnessRequested(uint64 sequenceNumber);
     event RandomnessResult(uint64 sequenceNumber, uint256 randomNumber);
-    event WinnerTxFailed();
+
+    error RewardTxFailed();
 
     IEntropyV2 public entropy;
     address[] private players;
     mapping(address => bool) private played;
     mapping(address => string) private names;
     mapping(address => uint256) private scores;
-    uint8 private count;
 
     constructor(address entropyAddress) {
         entropy = IEntropyV2(entropyAddress);
@@ -49,6 +49,10 @@ contract MonadNinja is IEntropyConsumer {
         if (!exists) {
             players.push(msg.sender);
         }
+
+        if(msg.value > fee){
+            (bool ok, ) = payable(msg.sender).call{value: (msg.value - fee)}("");
+        }
         emit RandomnessRequested(sequenceNumber);
     }
 
@@ -65,11 +69,6 @@ contract MonadNinja is IEntropyConsumer {
         address provider,
         bytes32 randomNumber
     ) internal override {
-        count++;
-        if(count == 50) {
-            count = 0;
-            chooseWinner(uint256(randomNumber));
-        }
         emit RandomnessResult(sequence, uint256(randomNumber));
     }
 
@@ -85,9 +84,18 @@ contract MonadNinja is IEntropyConsumer {
         return players;
     }
 
-    function chooseWinner(uint256 random) private {
-        address winner = players[(random % players.length)];
-        (bool ok,) = winner.call{value: address(this).balance}("");
-        if(!ok) emit WinnerTxFailed();
+    function getEntropyFee() external view returns(uint256) {
+        return entropy.getFeeV2();
+    }
+
+    function chooseWinner() external payable {
+        address firstPlace = players[0];
+        for(uint256 i = 1; i < players.length; i++){
+            if(scores[players[i]] > scores[firstPlace]){
+                firstPlace = players[i];
+            }
+        }
+        (bool sent, ) = payable(firstPlace).call{value: msg.value}("");
+        require(sent, RewardTxFailed());
     }
 }
