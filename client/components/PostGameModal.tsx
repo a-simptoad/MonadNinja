@@ -42,7 +42,7 @@ export default function PostGameModal({
     if (!playerName.trim()) return;
 
     writeContract({
-      address: '0x9524B61A20B1AbCBab037A8E1D3E7f8DEd728328',
+      address: '0xAcF8E4876C44e9E16E8aa994F1890A7b6baD3f4c',
       abi: abi,
       functionName: 'updateScore',
       args: [playerName, BigInt(finalScore)],

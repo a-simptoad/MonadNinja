@@ -11,7 +11,7 @@ interface LeaderboardEntry {
 }
 
 export default function Leaderboard() {
-  const CONTRACT_ADDRESS = '0x9524B61A20B1AbCBab037A8E1D3E7f8DEd728328' as `0x${string}`;
+  const CONTRACT_ADDRESS = '0xAcF8E4876C44e9E16E8aa994F1890A7b6baD3f4c' as `0x${string}`;
 
   const { 
     data: playerAddresses, 

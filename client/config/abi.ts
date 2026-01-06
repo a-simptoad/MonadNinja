@@ -1,5 +1,10 @@
 export const abi = [
 	{
+		"inputs": [],
+		"name": "RewardTxFailed",
+		"type": "error"
+	},
+	{
 		"anonymous": false,
 		"inputs": [
 			{
@@ -32,12 +37,6 @@ export const abi = [
 		"type": "event"
 	},
 	{
-		"anonymous": false,
-		"inputs": [],
-		"name": "WinnerTxFailed",
-		"type": "event"
-	},
-	{
 		"inputs": [
 			{
 				"internalType": "uint64",
@@ -62,12 +61,32 @@ export const abi = [
 	},
 	{
 		"inputs": [],
+		"name": "chooseWinner",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
 		"name": "entropy",
 		"outputs": [
 			{
 				"internalType": "contract IEntropyV2",
 				"name": "",
 				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getEntropyFee",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",
