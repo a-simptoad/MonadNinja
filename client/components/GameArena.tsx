@@ -7,7 +7,8 @@ import {
   useWriteContract, 
   useAccount, 
   useWaitForTransactionReceipt, 
-  usePublicClient 
+  usePublicClient,
+  useBalance
 } from "wagmi";
 import { parseEventLogs } from "viem"; 
 import { abi } from "@/config/abi";
@@ -33,7 +34,7 @@ export default function GameArena({ contractAddress, txHash, setSeed, setTxHash 
     isSuccess: isConfirmed 
   } = useWaitForTransactionReceipt({ hash: txHash });
 
-  const { writeContract, isPending: isWalletOpening } = useWriteContract({ 
+  const { writeContract, isPending: isWalletOpening, isError: isWalletError } = useWriteContract({ 
     mutation: { 
       onSuccess: (hash) => setTxHash(hash),
       onError: (err) => {
@@ -44,6 +45,8 @@ export default function GameArena({ contractAddress, txHash, setSeed, setTxHash 
         window.alert('Tx error:' + err.message);},
     }, 
   });
+
+  const getBalance = useBalance({ address: address });
 
   useEffect(() => {
     if (isConfirmed && receipt && !sequenceNumber) {
@@ -134,7 +137,14 @@ export default function GameArena({ contractAddress, txHash, setSeed, setTxHash 
   }, [gameStarted]);
   
   function handleStart() {
-    if(!address) return;
+    if(!address) {
+      window.alert('Please connect your wallet to start the game.');
+      return;
+    }
+    if(getBalance?.data && getBalance.data.value < 200000000000000000n) {
+      window.alert('Insufficient balance to start the game. You need at least 0.20 MON.\nTry adding tokens to your embedded wallet address: ' + address);
+      return;
+    }
     
     setSequenceNumber(null);
     setRandomNumber(""); 
@@ -153,6 +163,7 @@ export default function GameArena({ contractAddress, txHash, setSeed, setTxHash 
 
   const isWaitingForOracle = isConfirmed && sequenceNumber && !gameStarted;
   const isProcessing = isWalletOpening || isConfirming || isWaitingForOracle;
+  const errorOccured = isWalletError;
 
   return (
     <div className="w-full flex flex-col gap-4">
@@ -163,21 +174,21 @@ export default function GameArena({ contractAddress, txHash, setSeed, setTxHash 
             <div className="text-center">
                <div className="w-20 h-20 rounded-full bg-lime-900 flex items-center justify-center mx-auto mb-4">
                 <div className="w-16 h-16 rounded-full bg-card flex items-center justify-center text-3xl animate-pulse">
-                  {isWaitingForOracle ? "🔮" : (isProcessing ? "⏳" : "🥷")}
+                  {errorOccured ? "❌" : isWaitingForOracle ? "🔮" : (isProcessing ? "⏳" : "🥷")}
                 </div>
               </div>
 
               <h2 className="text-2xl font-bold text-foreground mb-2">
-                {isWaitingForOracle ? "Summoning Oracle..." : 
+                {errorOccured ? "Error Occurred" : isWaitingForOracle ? "Summoning Oracle..." : 
                  isProcessing ? "Processing..." : "Ready to Slice?"}
               </h2>
 
               <p className="text-sm text-muted-foreground mb-6">
-                 {isWaitingForOracle ? `Waiting for Random Seed #${sequenceNumber?.toString()}...` : 
+                 {errorOccured ? "An error occurred. Please try again." : isWaitingForOracle ? `Waiting for Random Seed #${sequenceNumber?.toString()}...` : 
                   isConfirming ? "Confirming transaction..." : "Get your VRF seed and start the game"}
               </p>
 
-              {!isProcessing && (
+              {(errorOccured || !isProcessing) && (
                   <button onClick={handleStart} className="px-8 py-3 bg-lime-600 text-accent-foreground font-bold rounded-lg hover:opacity-90 transition-opacity">
                     Start Game (0.20 MON)
                   </button>
