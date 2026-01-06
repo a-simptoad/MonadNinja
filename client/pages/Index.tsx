@@ -4,6 +4,7 @@ import GameArena from "@/components/GameArena";
 import FairnessPanel from "@/components/FairnessPanel";
 import Leaderboard from "@/components/Leaderboard";
 import PostGameModal from "@/components/PostGameModal";
+import GameInfoPanel from "@/components/GameInfoPanel";
 
 export default function Index() {
   const [showPostGameModal, setShowPostGameModal] = useState(false);
@@ -33,7 +34,8 @@ export default function Index() {
             </div>
 
             {/* Fairness Sidebar */}
-            <div className="w-full md:w-80 flex-shrink-0">
+            <div className="w-full md:w-80 flex-shrink-0 gap-4 flex flex-col">
+              <GameInfoPanel />
               <FairnessPanel txHash={txHash} seed={seed} />
             </div>
           </div>
