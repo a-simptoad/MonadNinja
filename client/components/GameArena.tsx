@@ -8,7 +8,8 @@ import {
   useAccount, 
   useWaitForTransactionReceipt, 
   usePublicClient,
-  useBalance
+  useBalance,
+  useReadContract,
 } from "wagmi";
 import { parseEventLogs } from "viem"; 
 import { abi } from "@/config/abi";
@@ -46,7 +47,20 @@ export default function GameArena({ contractAddress, txHash, setSeed, setTxHash 
     }, 
   });
 
+  const { data: entropyFee, refetch } = useReadContract({
+      address: "0xAcF8E4876C44e9E16E8aa994F1890A7b6baD3f4c" as `0x${string}`,
+      abi: abi,
+      functionName: "getEntropyFee",
+  });
+
   const getBalance = useBalance({ address: address });
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      refetch();
+    }, 10000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     if (isConfirmed && receipt && !sequenceNumber) {
@@ -141,7 +155,7 @@ export default function GameArena({ contractAddress, txHash, setSeed, setTxHash 
       window.alert('Please connect your wallet to start the game.');
       return;
     }
-    if(getBalance?.data && getBalance.data.value < 200000000000000000n) {
+    if(getBalance?.data && getBalance.data.value < entropyFee! + 100000000000000000n) {
       window.alert('Insufficient balance to start the game. You need at least 0.20 MON.\nTry adding tokens to your embedded wallet address: ' + address);
       return;
     }
@@ -157,7 +171,7 @@ export default function GameArena({ contractAddress, txHash, setSeed, setTxHash 
       functionName: 'requestRandomNumber',
       account: address,
       chain: monadTestnet, 
-      value: 200000000000000000n, 
+      value: entropyFee! + 50000000000000000n, 
     });
   }
 
@@ -190,7 +204,7 @@ export default function GameArena({ contractAddress, txHash, setSeed, setTxHash 
 
               {(errorOccured || !isProcessing) && (
                   <button onClick={handleStart} className="px-8 py-3 bg-lime-600 text-accent-foreground font-bold rounded-lg hover:opacity-90 transition-opacity">
-                    Start Game (0.20 MON)
+                    Start Game (Fee + 0.05 MON)
                   </button>
               )}
             </div>

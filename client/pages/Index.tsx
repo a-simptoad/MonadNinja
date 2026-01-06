@@ -35,7 +35,7 @@ export default function Index() {
 
             {/* Fairness Sidebar */}
             <div className="w-full md:w-80 flex-shrink-0 gap-4 flex flex-col">
-              <GameInfoPanel />
+              <GameInfoPanel txHash={txHash} />
               <FairnessPanel txHash={txHash} seed={seed} />
             </div>
           </div>
